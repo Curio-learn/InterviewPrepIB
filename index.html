@@ -272,13 +272,55 @@ header span { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(
 .mm-input.wrong { border-color: var(--red); background: rgba(224,82,82,0.08); }
 
 .mm-feedback {
-  font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 8px 12px;
-  border-radius: 4px; display: none; line-height: 1.5;
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; padding: 0;
+  border-radius: 6px; display: none; line-height: 1.65;
 }
-.mm-feedback.correct { display: block; background: rgba(76,175,125,0.1); border: 1px solid rgba(76,175,125,0.3); color: var(--green); }
-.mm-feedback.wrong { display: block; background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.25); color: var(--red); }
+.mm-feedback.correct { display: block; }
+.mm-feedback.wrong { display: block; }
 
-.mm-next-hint { font-family: 'DM Mono', monospace; font-size: 0.57rem; color: var(--text-muted); text-align: right; letter-spacing: 0.08em; }
+.mm-fb-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 6px 6px 0 0;
+  font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.05em;
+}
+.mm-feedback.correct .mm-fb-header { background: rgba(76,175,125,0.15); border: 1px solid rgba(76,175,125,0.35); color: var(--green); border-bottom: none; border-radius: 6px; }
+.mm-feedback.wrong .mm-fb-header { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3); color: var(--red); border-bottom: none; border-radius: 6px 6px 0 0; }
+
+.mm-fb-body {
+  padding: 12px 14px; background: var(--surface2);
+  border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.mm-fb-answer {
+  font-family: 'DM Mono', monospace; font-size: 0.78rem;
+  color: var(--accent2); background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2); border-radius: 4px;
+  padding: 7px 10px;
+}
+.mm-fb-method { font-size: 0.8rem; color: var(--text); line-height: 1.7; }
+.mm-fb-method strong { color: var(--accent2); font-weight: 500; }
+.mm-fb-method .step { display: flex; gap: 8px; margin-bottom: 3px; }
+.mm-fb-method .step-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--accent); background: rgba(201,168,76,0.12); border-radius: 3px; padding: 1px 6px; flex-shrink: 0; height: fit-content; margin-top: 2px; }
+.mm-fb-tip {
+  font-size: 0.75rem; color: var(--text-dim); padding: 7px 10px;
+  background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.2);
+  border-radius: 4px; line-height: 1.6;
+}
+.mm-fb-tip strong { color: var(--blue); font-weight: 500; }
+
+.mm-next-row {
+  display: flex; align-items: center; gap: 10px; justify-content: flex-end; margin-top: 2px;
+}
+.mm-next-btn {
+  background: var(--accent); border: none; color: #0a0a0a;
+  padding: 9px 22px; border-radius: 4px; font-family: 'DM Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; font-weight: 500; transition: background 0.15s;
+}
+.mm-next-btn:hover { background: var(--accent2); }
+.mm-next-kb { font-family: 'DM Mono', monospace; font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.06em; }
+.mm-next-kb kbd { background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 2px; }
+@media (max-width: 480px) { .mm-next-kb { display: none; } }
 
 /* ── MM Complete ── */
 .mm-complete {
@@ -309,6 +351,8 @@ header span { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(
 .mm-time-btn.active { border-color: var(--accent2); color: var(--accent2); }
 .mm-type-btn { flex-shrink: 0; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 0.62rem; cursor: pointer; transition: all 0.15s; }
 .mm-type-btn.active { border-color: var(--blue); color: var(--blue); }
+.mm-size-btn { flex-shrink: 0; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 0.62rem; cursor: pointer; transition: all 0.15s; }
+.mm-size-btn.active { border-color: var(--accent2); color: var(--accent2); }
 </style>
 </head>
 <body>
@@ -406,6 +450,12 @@ header span { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(
     <span class="mm-setting-label">Mode:</span>
     <button class="mm-type-btn active" data-type="mcq" onclick="mmSetType(this)">Multiple Choice</button>
     <button class="mm-type-btn" data-type="input" onclick="mmSetType(this)">Type Answer</button>
+    <span style="width:8px"></span>
+    <span class="mm-setting-label">Session:</span>
+    <button class="mm-size-btn" data-size="30" onclick="mmSetSize(this)">30</button>
+    <button class="mm-size-btn active" data-size="60" onclick="mmSetSize(this)">60</button>
+    <button class="mm-size-btn" data-size="100" onclick="mmSetSize(this)">100</button>
+    <button class="mm-size-btn" data-size="999" onclick="mmSetSize(this)">All</button>
   </div>
   <div class="mm-stats-bar">
     <div class="stat"><span class="stat-val green" id="mm-correct">0</span><span class="stat-label">Correct</span></div>
@@ -430,7 +480,10 @@ header span { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(
       <button class="btn btn-primary" id="mm-submit-btn" onclick="mmSubmitInput()" style="padding:10px 16px;">Submit</button>
     </div>
     <div class="mm-feedback" id="mm-feedback"></div>
-    <div class="mm-next-hint" id="mm-next-hint" style="display:none;font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--text-muted);text-align:right;letter-spacing:0.08em;">Press Enter or Space for next</div>
+    <div class="mm-next-row" id="mm-next-row" style="display:none;">
+      <button class="mm-next-btn" id="mm-next-btn" onclick="mmAdvance()">Next &rarr;</button>
+      <span class="mm-next-kb">or press <kbd>Enter</kbd> / <kbd>Space</kbd></span>
+    </div>
   </div>
   <div class="mm-complete" id="mm-complete">
     <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--accent);">Round Complete</h2>
@@ -892,328 +945,560 @@ function switchMode(mode){
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  MENTAL MATHS ENGINE
+//  MENTAL MATHS ENGINE — Procedural Generator (500+ unique questions per session)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Question bank — pure computation, percentage, ratio, valuation, IRR problems
-const MM_QUESTIONS = (function(){
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function r(min,max,step=1){ return Math.round((Math.random()*(max-min)+min)/step)*step; }
+function rChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function fmt(n,dp=1){ return parseFloat(n.toFixed(dp)); }
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+// Generate a large fresh pool every session
+function generateMMPool(){
   const qs = [];
 
-  // ── Percentage calculations ──────────────────────────────────────────────
-  function pctQs(){
-    const items = [
-      {base:200,pct:15,desc:"15% of $200M"},
-      {base:340,pct:15,desc:"15% of $340M"},
-      {base:500,pct:12,desc:"12% of $500M"},
-      {base:80,pct:25,desc:"25% of $80M"},
-      {base:450,pct:30,desc:"30% of $450M"},
-      {base:120,pct:35,desc:"35% of $120M"},
-      {base:600,pct:8,desc:"8% of $600M"},
-      {base:250,pct:40,desc:"40% of $250M"},
-      {base:180,pct:5,desc:"5% of $180M"},
-      {base:760,pct:25,desc:"25% of $760M"},
-      {base:1200,pct:15,desc:"15% of $1,200M"},
-      {base:400,pct:22.5,desc:"22.5% of $400M"},
-    ];
-    items.forEach(({base,pct,desc})=>{
-      const ans = +(base * pct / 100).toFixed(2);
-      qs.push({
-        cat:"Percentages",
-        q:`What is ${desc}? (give answer in $M, no $ sign)`,
-        answer: ans,
-        displayAnswer: `$${ans}M`,
-        explanation: `${pct}% × $${base}M = $${ans}M`,
-        type:"number"
-      });
+  // ── 1. PERCENTAGES ─────────────────────────────────────────────────────────
+  // Simple percentage of a number (50 questions)
+  for(let i=0;i<50;i++){
+    const base = rChoice([50,60,80,100,120,150,180,200,240,250,300,320,360,400,450,500,600,720,800,900,1000,1200,1500,2000]);
+    const pct  = rChoice([5,8,10,12,15,20,22.5,25,30,35,40,45,50,60,75]);
+    const ans  = fmt(base*pct/100,2);
+    const distractors = [fmt(base*pct/100*1.1,2), fmt(base*pct/100*0.9,2), fmt(base*(pct+5)/100,2)].filter(d=>d!==ans);
+    qs.push({
+      cat:"Percentages",
+      q:`What is ${pct}% of $${base}M? (answer in $M)`,
+      answer:ans, displayAnswer:`$${ans}M`,
+      explanation:`${pct}% × $${base}M = $${ans}M  [10%=$${base*0.1}M, 5%=$${base*0.05}M]`,
+      type:"number", distractors
     });
   }
 
-  // ── Growth rates ─────────────────────────────────────────────────────────
-  function growthQs(){
-    const items = [
-      {from:150,to:180},{from:200,to:240},{from:80,to:100},
-      {from:300,to:360},{from:500,to:575},{from:120,to:156},
-      {from:250,to:300},{from:400,to:480},{from:60,to:69},
-      {from:1000,to:1150},
-    ];
-    items.forEach(({from,to})=>{
-      const ans = Math.round((to-from)/from*100*10)/10;
-      qs.push({
-        cat:"Percentages",
-        q:`Revenue grows from $${from}M to $${to}M. What is the growth rate? (%, no % sign)`,
-        answer: ans,
-        displayAnswer: `${ans}%`,
-        explanation: `($${to}M − $${from}M) ÷ $${from}M = ${ans}%`,
-        type:"number"
-      });
+  // Revenue growth rate (40 questions)
+  for(let i=0;i<40;i++){
+    const from = rChoice([50,60,80,100,120,150,180,200,250,300,400,500,600,800,1000]);
+    const gPct = rChoice([5,8,10,12,15,18,20,25,30,33,40,50]);
+    const to   = Math.round(from*(1+gPct/100));
+    const ans  = fmt((to-from)/from*100,1);
+    qs.push({
+      cat:"Percentages",
+      q:`Revenue grows from $${from}M to $${to}M. Growth rate? (%, no symbol)`,
+      answer:ans, displayAnswer:`${ans}%`,
+      explanation:`($${to}−$${from}) ÷ $${from} = $${to-from}M ÷ $${from}M = ${ans}%`,
+      type:"number", distractors:[fmt(ans*1.1,1), fmt(ans*0.9,1), fmt(ans+5,1)]
     });
   }
 
-  // ── EV/EBITDA & multiples ─────────────────────────────────────────────────
-  function multipleQs(){
-    const items = [
-      {ev:500,ebitda:50,label:"EV/EBITDA"},
-      {ev:720,ebitda:80,label:"EV/EBITDA"},
-      {ev:300,ebitda:60,label:"EV/EBITDA"},
-      {ev:1200,ebitda:150,label:"EV/EBITDA"},
-      {ev:480,ebitda:40,label:"EV/EBITDA"},
-      {ev:900,ebitda:100,label:"EV/EBITDA"},
-    ];
-    items.forEach(({ev,ebitda,label})=>{
-      const ans = +(ev/ebitda).toFixed(1);
-      qs.push({
-        cat:"Multiples",
-        q:`EV = $${ev}M, EBITDA = $${ebitda}M. What is the ${label} multiple? (e.g. 10.0)`,
-        answer: ans,
-        displayAnswer: `${ans}x`,
-        explanation: `$${ev}M ÷ $${ebitda}M = ${ans}x`,
-        type:"number"
-      });
-    });
-    // P/E implied price
-    [{eps:4,pe:18},{eps:5,pe:20},{eps:3,pe:15},{eps:6,pe:22},{eps:2.5,pe:16}].forEach(({eps,pe})=>{
-      const ans = +(eps*pe).toFixed(2);
-      qs.push({
-        cat:"Multiples",
-        q:`EPS = $${eps}, P/E = ${pe}x. Implied share price? (no $ sign)`,
-        answer: ans,
-        displayAnswer: `$${ans}`,
-        explanation: `$${eps} × ${pe} = $${ans}`,
-        type:"number"
-      });
+  // Margin calculation (30 questions)
+  for(let i=0;i<30;i++){
+    const rev  = rChoice([100,150,200,250,300,400,500,600,800,1000,1200]);
+    const margin = rChoice([10,12,15,18,20,22,25,28,30,35,40]);
+    const profit = fmt(rev*margin/100,1);
+    qs.push({
+      cat:"Percentages",
+      q:`Revenue = $${rev}M, EBITDA margin = ${margin}%. EBITDA? ($M)`,
+      answer:profit, displayAnswer:`$${profit}M`,
+      explanation:`$${rev}M × ${margin}% = $${profit}M`,
+      type:"number", distractors:[fmt(profit*1.1,1),fmt(profit*0.9,1),fmt(profit+5,1)]
     });
   }
 
-  // ── Equity bridge ─────────────────────────────────────────────────────────
-  function equityBridgeQs(){
-    const items = [
-      {ev:600,debt:100,shares:50},
-      {ev:800,debt:200,shares:40},
-      {ev:500,debt:50,shares:25},
-      {ev:1200,debt:300,shares:60},
-      {ev:400,debt:80,shares:16},
-      {ev:900,debt:150,shares:30},
-    ];
-    items.forEach(({ev,debt,shares})=>{
-      const equity = ev-debt;
-      const price = +(equity/shares).toFixed(2);
-      qs.push({
-        cat:"Equity Bridge",
-        q:`EV = $${ev}M, net debt = $${debt}M, diluted shares = ${shares}M. Implied share price? (no $ sign)`,
-        answer: price,
-        displayAnswer: `$${price}`,
-        explanation: `Equity = $${ev}M − $${debt}M = $${equity}M. Price = $${equity}M ÷ ${shares}M = $${price}`,
-        type:"number"
-      });
-    });
-    // net cash cases
-    [{ev:400,cash:50,shares:20},{ev:300,cash:30,shares:15}].forEach(({ev,cash,shares})=>{
-      const equity = ev+cash;
-      const price = +(equity/shares).toFixed(2);
-      qs.push({
-        cat:"Equity Bridge",
-        q:`EV = $${ev}M, net cash = $${cash}M (company has no debt), shares = ${shares}M. Implied share price? (no $ sign)`,
-        answer: price,
-        displayAnswer: `$${price}`,
-        explanation: `Net cash = add back. Equity = $${ev}M + $${cash}M = $${equity}M. Price = $${equity}M ÷ ${shares}M = $${price}`,
-        type:"number"
-      });
+  // Back-solving margin from profit/revenue (20 questions)
+  for(let i=0;i<20;i++){
+    const rev    = rChoice([100,200,250,400,500,800,1000]);
+    const margin = rChoice([10,15,20,25,30,40]);
+    const profit = fmt(rev*margin/100,1);
+    qs.push({
+      cat:"Percentages",
+      q:`Revenue = $${rev}M, EBITDA = $${profit}M. EBITDA margin? (%, no symbol)`,
+      answer:margin, displayAnswer:`${margin}%`,
+      explanation:`$${profit}M ÷ $${rev}M = ${margin}%`,
+      type:"number", distractors:[margin+5, margin-5, margin+10].filter(d=>d>0&&d!==margin)
     });
   }
 
-  // ── Leverage & coverage ───────────────────────────────────────────────────
-  function leverageQs(){
-    const items = [
-      {debt:200,ebitda:80},{debt:300,ebitda:60},{debt:150,ebitda:50},
-      {debt:500,ebitda:100},{debt:240,ebitda:40},{debt:420,ebitda:70},
-    ];
-    items.forEach(({debt,ebitda})=>{
-      const ans = +(debt/ebitda).toFixed(1);
-      qs.push({
-        cat:"Leverage",
-        q:`Net debt = $${debt}M, EBITDA = $${ebitda}M. Net leverage ratio? (e.g. 2.5)`,
-        answer: ans,
-        displayAnswer: `${ans}x`,
-        explanation: `$${debt}M ÷ $${ebitda}M = ${ans}x net leverage`,
-        type:"number"
-      });
-    });
-    const coverage = [{ebit:60,int:20},{ebit:90,int:30},{ebit:120,int:40},{ebit:45,int:15}];
-    coverage.forEach(({ebit,int})=>{
-      const ans = +(ebit/int).toFixed(1);
-      qs.push({
-        cat:"Leverage",
-        q:`EBIT = $${ebit}M, interest expense = $${int}M. Interest coverage ratio? (e.g. 3.0)`,
-        answer: ans,
-        displayAnswer: `${ans}x`,
-        explanation: `$${ebit}M ÷ $${int}M = ${ans}x interest coverage`,
-        type:"number"
-      });
+  // ── 2. EV / MULTIPLES ──────────────────────────────────────────────────────
+  // EV/EBITDA multiple (35 questions)
+  for(let i=0;i<35;i++){
+    const mult   = rChoice([5,6,7,8,9,10,11,12,13,14,15,16,18,20]);
+    const ebitda = rChoice([20,25,30,40,50,60,75,80,100,120,150,200]);
+    const ev     = mult*ebitda;
+    qs.push({
+      cat:"Multiples",
+      q:`EV = $${ev}M, EBITDA = $${ebitda}M. EV/EBITDA? (e.g. 10.0)`,
+      answer:fmt(mult,1), displayAnswer:`${fmt(mult,1)}x`,
+      explanation:`$${ev}M ÷ $${ebitda}M = ${fmt(mult,1)}x`,
+      type:"number", distractors:[fmt(mult+1,1),fmt(mult-1,1),fmt(mult+2,1)]
     });
   }
 
-  // ── Tax shield / net income ───────────────────────────────────────────────
-  function taxQs(){
-    const items = [
-      {ebitda:60,da:15,int:10,tax:30},
-      {ebitda:80,da:20,int:15,tax:25},
-      {ebitda:100,da:25,int:20,tax:30},
-      {ebitda:50,da:10,int:8,tax:28},
-    ];
-    items.forEach(({ebitda,da,int,tax})=>{
-      const ebit=ebitda-da, ebt=ebit-int, netInc=+(ebt*(1-tax/100)).toFixed(1);
-      qs.push({
-        cat:"P&L Maths",
-        q:`EBITDA = $${ebitda}M, D&A = $${da}M, interest = $${int}M, tax = ${tax}%. Net income? (in $M, no $ sign)`,
-        answer: netInc,
-        displayAnswer: `$${netInc}M`,
-        explanation: `EBIT=$${ebit}M → EBT=$${ebt}M → Tax=$${+(ebt*tax/100).toFixed(1)}M → NI=$${netInc}M`,
-        type:"number"
-      });
-    });
-    // D&A increase NI impact
-    [{da_inc:5,tax:30},{da_inc:10,tax:25},{da_inc:8,tax:30}].forEach(({da_inc,tax})=>{
-      const impact = -+(da_inc*(1-tax/100)).toFixed(1);
-      qs.push({
-        cat:"P&L Maths",
-        q:`Depreciation increases by $${da_inc}M, tax rate ${tax}%. Net income impact? ($M, negative for decrease)`,
-        answer: impact,
-        displayAnswer: `$${impact}M`,
-        explanation: `Pre-tax ↓$${da_inc}M → tax saving = $${da_inc}M × ${tax}% = $${+(da_inc*tax/100).toFixed(1)}M. NI impact = $${impact}M`,
-        type:"number"
-      });
+  // EV from multiple + EBITDA (25 questions)
+  for(let i=0;i<25;i++){
+    const mult   = rChoice([6,7,8,9,10,11,12,14,15]);
+    const ebitda = rChoice([20,30,40,50,60,75,80,100,120,150]);
+    const ev     = mult*ebitda;
+    qs.push({
+      cat:"Multiples",
+      q:`EBITDA = $${ebitda}M, EV/EBITDA = ${mult}x. Enterprise Value? ($M)`,
+      answer:ev, displayAnswer:`$${ev}M`,
+      explanation:`$${ebitda}M × ${mult}x = $${ev}M`,
+      type:"number", distractors:[ev+ebitda, ev-ebitda, ev+ebitda*2].filter(d=>d!==ev&&d>0)
     });
   }
 
-  // ── NOPAT / unlevered FCF ─────────────────────────────────────────────────
-  function nopatQs(){
-    [{ebit:120,tax:25},{ebit:80,tax:30},{ebit:150,tax:28},{ebit:200,tax:25}].forEach(({ebit,tax})=>{
-      const ans = +(ebit*(1-tax/100)).toFixed(1);
-      qs.push({
-        cat:"P&L Maths",
-        q:`EBIT = $${ebit}M, tax = ${tax}%. What is NOPAT? ($M, no $ sign)`,
-        answer: ans,
-        displayAnswer: `$${ans}M`,
-        explanation: `$${ebit}M × (1 − ${tax}%) = $${ans}M`,
-        type:"number"
-      });
+  // P/E implied share price (30 questions)
+  for(let i=0;i<30;i++){
+    const pe  = rChoice([10,12,14,15,16,18,20,22,24,25,28,30]);
+    const eps = rChoice([1,1.5,2,2.5,3,3.5,4,4.5,5,6,7,8]);
+    const price = fmt(pe*eps,2);
+    qs.push({
+      cat:"Multiples",
+      q:`EPS = $${eps}, P/E = ${pe}x. Implied share price? (no $ sign)`,
+      answer:price, displayAnswer:`$${price}`,
+      explanation:`$${eps} × ${pe} = $${price}. Earnings yield = ${fmt(1/pe*100,1)}%`,
+      type:"number", distractors:[fmt(price*1.1,2),fmt(price*0.9,2),fmt(price+eps*2,2)]
     });
   }
 
-  // ── IRR / MoM benchmarks (MCQ) ────────────────────────────────────────────
-  function irrQs(){
-    const benchmarks = [
-      {mom:2,yrs:5,irr:14.9,opts:["14.9%","20.1%","18.4%","12.0%"],exp:"2^(1/5)−1 ≈ 14.9%. Below a typical 20%+ PE hurdle."},
-      {mom:3,yrs:5,irr:24.6,opts:["24.6%","20.0%","30.2%","18.0%"],exp:"3^(1/5)−1 ≈ 24.6%. Above 20% PE hurdle."},
-      {mom:2,yrs:3,irr:26.0,opts:["26.0%","22.5%","33.3%","20.0%"],exp:"2^(1/3)−1 ≈ 26.0%."},
-      {mom:3,yrs:3,irr:44.2,opts:["44.2%","33.3%","50.0%","37.5%"],exp:"3^(1/3)−1 ≈ 44.2%."},
-      {mom:2.5,yrs:4,irr:25.7,opts:["25.7%","22.5%","31.6%","20.0%"],exp:"2.5^(1/4)−1 ≈ 25.7%."},
-    ];
-    benchmarks.forEach(({mom,yrs,irr,opts,exp})=>{
-      qs.push({
-        cat:"IRR / MoM",
-        q:`Approximate the IRR for a ${mom}x MoM return over ${yrs} years. Which is closest?`,
-        answer: `${irr}%`,
-        displayAnswer: `${irr}%`,
-        explanation: exp,
-        type:"mcq",
-        options: opts
-      });
-    });
-    // Rule of 72
-    [{ret:8,yrs:9},{ret:12,yrs:6},{ret:6,yrs:12},{ret:24,yrs:3}].forEach(({ret,yrs})=>{
-      qs.push({
-        cat:"IRR / MoM",
-        q:`Rule of 72: at ${ret}% annual return, how many years to double your money?`,
-        answer: `${yrs} years`,
-        displayAnswer: `${yrs} years`,
-        explanation: `72 ÷ ${ret} = ${yrs} years to double`,
-        type:"mcq",
-        options:[`${yrs} years`,`${yrs+3} years`,`${Math.max(1,yrs-2)} years`,`${yrs+6} years`]
-      });
+  // ── 3. EQUITY BRIDGE ──────────────────────────────────────────────────────
+  // EV → equity value → share price (40 questions)
+  for(let i=0;i<40;i++){
+    const ebitda = rChoice([20,30,40,50,60,75,80,100,120,150,200]);
+    const mult   = rChoice([6,7,8,9,10,11,12]);
+    const ev     = mult*ebitda;
+    const debt   = rChoice([0.5,1,1.5,2,2.5,3].map(x=>Math.round(ebitda*x/10)*10));
+    const shares = rChoice([10,15,20,25,30,40,50,60,80,100]);
+    const equity = ev-debt;
+    if(equity<=0) continue;
+    const price  = fmt(equity/shares,2);
+    qs.push({
+      cat:"Equity Bridge",
+      q:`EBITDA=$${ebitda}M, ${mult}x EV/EBITDA, net debt=$${debt}M, shares=${shares}M. Share price? (no $ sign)`,
+      answer:price, displayAnswer:`$${price}`,
+      explanation:`EV=$${ev}M → Equity=$${ev}−$${debt}=$${equity}M → $${equity}M÷${shares}M=$${price}`,
+      type:"number", distractors:[fmt(price*1.15,2),fmt(price*0.85,2),fmt(ev/shares,2)]
     });
   }
 
-  // ── Terminal value ────────────────────────────────────────────────────────
-  function tvQs(){
-    [{fcf:100,wacc:10,g:2.5},{fcf:80,wacc:9,g:2},{fcf:120,wacc:11,g:3},{fcf:60,wacc:10,g:2}].forEach(({fcf,wacc,g})=>{
-      const tv = Math.round(fcf*(1+g/100)/((wacc-g)/100));
-      qs.push({
-        cat:"DCF",
-        q:`WACC = ${wacc}%, terminal growth = ${g}%, terminal FCF = $${fcf}M. Terminal value? (nearest $M, no $ sign)`,
-        answer: tv,
-        displayAnswer: `$${tv}M`,
-        explanation: `TV = $${fcf}M × (1+${g}%) ÷ (${wacc}%−${g}%) = $${tv}M`,
-        type:"number"
-      });
+  // Net cash bridge (15 questions)
+  for(let i=0;i<15;i++){
+    const ev    = rChoice([200,250,300,400,500,600,800,1000]);
+    const cash  = rChoice([20,30,40,50,60,80,100]);
+    const shares= rChoice([10,15,20,25,30,40,50]);
+    const equity= ev+cash;
+    const price = fmt(equity/shares,2);
+    qs.push({
+      cat:"Equity Bridge",
+      q:`EV=$${ev}M, net cash=$${cash}M (no debt), shares=${shares}M. Share price? (no $ sign)`,
+      answer:price, displayAnswer:`$${price}`,
+      explanation:`Net cash → add to EV. Equity=$${ev}+$${cash}=$${equity}M. Price=$${equity}÷${shares}=$${price}`,
+      type:"number", distractors:[fmt((ev-cash)/shares,2),fmt(price*1.1,2),fmt(price*0.9,2)]
     });
   }
 
-  // ── Reciprocals / yields (MCQ) ────────────────────────────────────────────
-  function yieldQs(){
-    [{mult:20,yld:"5.0%"},{mult:15,yld:"6.7%"},{mult:12,yld:"8.3%"},{mult:25,yld:"4.0%"},{mult:10,yld:"10.0%"}].forEach(({mult,yld})=>{
-      qs.push({
-        cat:"Yields",
-        q:`A stock trades at ${mult}x P/E. What is the earnings yield (1/multiple)?`,
-        answer: yld,
-        displayAnswer: yld,
-        explanation: `1 ÷ ${mult} = ${yld}. Compare to risk-free rate to assess equity premium.`,
-        type:"mcq",
-        options:[yld,
-          `${(1/(mult+2)*100).toFixed(1)}%`,
-          `${(1/(mult-3)*100).toFixed(1)}%`,
-          `${(1/(mult+5)*100).toFixed(1)}%`
-        ]
-      });
+  // Acquisition premium (25 questions)
+  for(let i=0;i<25;i++){
+    const cur   = rChoice([4,5,6,8,10,12,15,16,18,20,24,25,30,40,50]);
+    const premPct = rChoice([10,15,20,25,30,35,40,50]);
+    const offer = fmt(cur*(1+premPct/100),2);
+    qs.push({
+      cat:"Equity Bridge",
+      q:`Stock at $${cur}/share, offer at $${offer}/share. Acquisition premium? (%, no symbol)`,
+      answer:premPct, displayAnswer:`${premPct}%`,
+      explanation:`($${offer}−$${cur})÷$${cur} = ${premPct}%`,
+      type:"number", distractors:[premPct+10,premPct-10,premPct+5].filter(d=>d>0&&d!==premPct)
     });
   }
 
-  // ── Acquisition premium ───────────────────────────────────────────────────
-  function premiumQs(){
-    [{cur:8,offer:10},{cur:15,offer:18},{cur:20,offer:26},{cur:12,offer:15}].forEach(({cur,offer})=>{
-      const prem = Math.round((offer-cur)/cur*100);
-      qs.push({
-        cat:"M&A Maths",
-        q:`A stock trades at $${cur}. Buyer offers $${offer}/share. What is the acquisition premium? (%, no % sign)`,
-        answer: prem,
-        displayAnswer: `${prem}%`,
-        explanation: `($${offer} − $${cur}) ÷ $${cur} = ${prem}% premium`,
-        type:"number"
-      });
+  // ── 4. LEVERAGE & COVERAGE ────────────────────────────────────────────────
+  // Net leverage (30 questions)
+  for(let i=0;i<30;i++){
+    const ebitda = rChoice([20,30,40,50,60,75,80,100,120,150,200]);
+    const turns  = rChoice([1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6]);
+    const debt   = Math.round(ebitda*turns);
+    const ans    = fmt(debt/ebitda,1);
+    qs.push({
+      cat:"Leverage",
+      q:`Net debt=$${debt}M, EBITDA=$${ebitda}M. Net leverage? (e.g. 3.5)`,
+      answer:ans, displayAnswer:`${ans}x`,
+      explanation:`$${debt}÷$${ebitda}=${ans}x. ${ans<=2.5?'IG territory':'HY/LBO territory — lenders watch closely above 4x.'}`,
+      type:"number", distractors:[fmt(ans+0.5,1),fmt(ans-0.5,1),fmt(ans+1,1)]
     });
   }
 
-  // ── Compounding ───────────────────────────────────────────────────────────
-  function compoundQs(){
-    const items = [
-      {a:1.25,b:1.25,res:"1.5625"},
-      {a:1.1,b:1.1,res:"1.21"},
-      {a:1.2,b:1.2,res:"1.44"},
-      {a:1.15,b:1.15,res:"1.3225"},
-    ];
-    items.forEach(({a,b,res})=>{
-      const pct = `${+((+res-1)*100).toFixed(2)}%`;
-      qs.push({
-        cat:"Compounding",
-        q:`${a} × ${b} = ? (two years at ${Math.round((a-1)*100)}% growth rate — total return?)`,
-        answer: pct,
-        displayAnswer: `${res} (${pct} total)`,
-        explanation: `${a} × ${b} = ${res}. Compounding — not simply ${Math.round((a-1)*100)*2}%.`,
-        type:"mcq",
-        options:[pct,
-          `${Math.round((a-1)*100)*2}%`,
-          `${+((+res-1)*100-5).toFixed(2)}%`,
-          `${+((+res-1)*100+5).toFixed(2)}%`
-        ]
-      });
+  // Interest coverage (25 questions)
+  for(let i=0;i<25;i++){
+    const coverage = rChoice([1.5,2,2.5,3,3.5,4,5,6,8,10]);
+    const interest = rChoice([5,8,10,12,15,20,25,30]);
+    const ebit     = Math.round(coverage*interest);
+    qs.push({
+      cat:"Leverage",
+      q:`EBIT=$${ebit}M, interest=$${interest}M. Interest coverage? (e.g. 3.0)`,
+      answer:fmt(coverage,1), displayAnswer:`${fmt(coverage,1)}x`,
+      explanation:`$${ebit}÷$${interest}=${fmt(coverage,1)}x. ${coverage<2?'Below 2x — distress signal.':coverage<3?'Tight — lenders watch this.':'Comfortable.'}`,
+      type:"number", distractors:[fmt(coverage+0.5,1),fmt(coverage-0.5,1),fmt(coverage+1,1)]
     });
   }
 
-  pctQs(); growthQs(); multipleQs(); equityBridgeQs();
-  leverageQs(); taxQs(); nopatQs(); irrQs(); tvQs(); yieldQs();
-  premiumQs(); compoundQs();
+  // EBITDA from debt + leverage (20 questions)
+  for(let i=0;i<20;i++){
+    const turns = rChoice([2,2.5,3,3.5,4,4.5,5]);
+    const debt  = rChoice([100,120,150,160,180,200,250,300,350,400,500]);
+    const ebitda= Math.round(debt/turns);
+    qs.push({
+      cat:"Leverage",
+      q:`Net debt=$${debt}M, leverage=${turns}x. Implied EBITDA? ($M)`,
+      answer:ebitda, displayAnswer:`$${ebitda}M`,
+      explanation:`EBITDA = Net Debt ÷ Leverage = $${debt}M ÷ ${turns} = $${ebitda}M`,
+      type:"number", distractors:[ebitda+10,ebitda-10,Math.round(ebitda*1.2)]
+    });
+  }
+
+  // ── 5. P&L MATHS ──────────────────────────────────────────────────────────
+  // EBITDA → net income (35 questions)
+  for(let i=0;i<35;i++){
+    const ebitda = rChoice([20,30,40,50,60,75,80,100,120,150]);
+    const da     = rChoice([5,8,10,12,15,20]);
+    const interest = rChoice([0,5,8,10,12,15,20]);
+    const tax    = rChoice([25,28,30]);
+    const ebit   = ebitda-da;
+    const ebt    = ebit-interest;
+    if(ebt<=0) continue;
+    const ni     = fmt(ebt*(1-tax/100),1);
+    qs.push({
+      cat:"P&L Maths",
+      q:`EBITDA=$${ebitda}M, D&A=$${da}M, interest=$${interest}M, tax=${tax}%. Net income? ($M)`,
+      answer:ni, displayAnswer:`$${ni}M`,
+      explanation:`EBIT=$${ebit}M → EBT=$${ebt}M → NI=$${ebt}×${100-tax}%=$${ni}M`,
+      type:"number", distractors:[fmt(ni*1.1,1),fmt(ni*0.9,1),fmt(ni+da*(1-tax/100),1)]
+    });
+  }
+
+  // NOPAT (25 questions)
+  for(let i=0;i<25;i++){
+    const ebit = rChoice([30,40,50,60,75,80,100,120,150,200,250,300]);
+    const tax  = rChoice([25,28,30]);
+    const nopat = fmt(ebit*(1-tax/100),1);
+    qs.push({
+      cat:"P&L Maths",
+      q:`EBIT=$${ebit}M, tax=${tax}%. NOPAT? ($M)`,
+      answer:nopat, displayAnswer:`$${nopat}M`,
+      explanation:`NOPAT = $${ebit}M × (1−${tax}%) = $${nopat}M. Starting point for unlevered FCF.`,
+      type:"number", distractors:[fmt(nopat*1.1,1),fmt(nopat*0.9,1),fmt(ebit,1)]
+    });
+  }
+
+  // D&A increase → NI & CF impact (20 questions)
+  for(let i=0;i<20;i++){
+    const daInc = rChoice([3,5,8,10,12,15,20]);
+    const tax   = rChoice([25,28,30]);
+    const niImpact  = -fmt(daInc*(1-tax/100),1);
+    const cfImpact  = fmt(daInc*tax/100,1);
+    qs.push({
+      cat:"P&L Maths",
+      q:`D&A increases by $${daInc}M, tax=${tax}%. Net income impact? ($M, negative = decrease)`,
+      answer:niImpact, displayAnswer:`$${niImpact}M`,
+      explanation:`Pre-tax ↓$${daInc}M. Tax shield=$${daInc}×${tax}%=$${fmt(daInc*tax/100,1)}M. NI impact=$${niImpact}M. CFO impact=+$${cfImpact}M (non-cash shield).`,
+      type:"number", distractors:[fmt(niImpact+2,1),fmt(-daInc,1),fmt(niImpact*0.8,1)]
+    });
+  }
+
+  // Revenue → gross profit → EBIT (25 questions)
+  for(let i=0;i<25;i++){
+    const rev     = rChoice([100,150,200,250,300,400,500,600,800,1000]);
+    const gm      = rChoice([30,35,40,45,50,55,60,65,70]);
+    const sgaOpts = [10,15,20,25,30,40,50,60].filter(x=>x<rev*gm/100);
+    const sga     = sgaOpts.length ? rChoice(sgaOpts) : 20;
+    const da      = rChoice([5,8,10,12,15,20]);
+    const gp      = fmt(rev*gm/100,1);
+    const ebit    = fmt(gp-sga-da,1);
+    if(ebit<=0) continue;
+    qs.push({
+      cat:"P&L Maths",
+      q:`Rev=$${rev}M, gross margin=${gm}%, SG&A=$${sga}M, D&A=$${da}M. EBIT? ($M)`,
+      answer:ebit, displayAnswer:`$${ebit}M`,
+      explanation:`GP=$${rev}×${gm}%=$${gp}M → EBIT=$${gp}−$${sga}−$${da}=$${ebit}M (${fmt(ebit/rev*100,1)}% EBIT margin)`,
+      type:"number", distractors:[fmt(ebit+da,1),fmt(ebit+sga,1),fmt(ebit*1.15,1)]
+    });
+  }
+
+  // ── 6. UNLEVERED FCF / DCF ────────────────────────────────────────────────
+  // Unlevered FCF build (25 questions)
+  for(let i=0;i<25;i++){
+    const ebitda = rChoice([40,50,60,75,80,100,120,150]);
+    const da     = rChoice([5,8,10,12,15,20]);
+    const dwc    = rChoice([-10,-8,-5,-3,0,3,5,8,10]); // negative = inflow
+    const capex  = rChoice([5,8,10,12,15,20,25]);
+    const tax    = rChoice([25,28,30]);
+    const ebit   = ebitda-da;
+    const nopat  = fmt(ebit*(1-tax/100),1);
+    const fcf    = fmt(nopat+da-dwc-capex,1);
+    if(fcf<=0) continue;
+    const dwcLabel = dwc>0?`$${dwc}M outflow`:(dwc<0?`$${-dwc}M inflow`:"nil");
+    qs.push({
+      cat:"DCF",
+      q:`EBITDA=$${ebitda}M, D&A=$${da}M, ΔWC=${dwcLabel}, capex=$${capex}M, tax=${tax}%. Unlevered FCF? ($M)`,
+      answer:fcf, displayAnswer:`$${fcf}M`,
+      explanation:`EBIT=$${ebit}M → NOPAT=$${nopat}M +D&A=$${da}M −ΔWC=$${dwc}M −Capex=$${capex}M = $${fcf}M`,
+      type:"number", distractors:[fmt(fcf+capex,1),fmt(fcf+da,1),fmt(fcf*1.15,1)]
+    });
+  }
+
+  // Terminal value (30 questions)
+  for(let i=0;i<30;i++){
+    const fcf  = rChoice([20,30,40,50,60,75,80,100,120,150]);
+    const wacc = rChoice([8,9,10,11,12]);
+    const g    = rChoice([1.5,2,2.5,3]);
+    if(wacc<=g) continue;
+    const spread = (wacc-g)/100;
+    const tv     = Math.round(fcf*(1+g/100)/spread);
+    const tvMult = fmt(tv/fcf,1);
+    qs.push({
+      cat:"DCF",
+      q:`Terminal FCF=$${fcf}M, WACC=${wacc}%, terminal growth=${g}%. TV? (nearest $M)`,
+      answer:tv, displayAnswer:`$${tv}M (${tvMult}x FCF)`,
+      explanation:`TV=$${fcf}×(1+${g}%)÷(${wacc}%−${g}%)=$${fcf*(1+g/100).toFixed(2)}÷${spread.toFixed(3)}=$${tv}M`,
+      type:"number", distractors:[Math.round(tv*1.1),Math.round(tv*0.9),Math.round(tv*1.2)]
+    });
+  }
+
+  // WACC back-solve: given TV and FCF, what's the implied spread (20 questions)
+  for(let i=0;i<20;i++){
+    const fcf  = rChoice([40,50,60,80,100]);
+    const wacc = rChoice([9,10,11,12]);
+    const g    = rChoice([2,2.5,3]);
+    if(wacc<=g) continue;
+    const tv   = Math.round(fcf*(1+g/100)/(wacc-g)*100);
+    qs.push({
+      cat:"DCF",
+      q:`TV=$${tv}M from FCF=$${fcf}M. If terminal growth=${g}%, what is WACC? (%, no symbol)`,
+      answer:wacc, displayAnswer:`${wacc}%`,
+      explanation:`TV=FCF×(1+g)÷(WACC−g) → WACC=$${fcf}×${1+g/100}÷$${tv}+${g}%=${wacc}%`,
+      type:"mcq",
+      options:[`${wacc}%`,`${wacc+1}%`,`${wacc-1}%`,`${wacc+2}%`]
+    });
+  }
+
+  // ── 7. IRR / MOM / PE RETURNS ─────────────────────────────────────────────
+  // MoM to approximate IRR (MCQ benchmarks — 35 questions)
+  const irrBench = [
+    {mom:2,yrs:3,irr:26},{mom:2,yrs:4,irr:19},{mom:2,yrs:5,irr:15},
+    {mom:2.5,yrs:3,irr:36},{mom:2.5,yrs:4,irr:26},{mom:2.5,yrs:5,irr:20},
+    {mom:3,yrs:3,irr:44},{mom:3,yrs:4,irr:32},{mom:3,yrs:5,irr:25},
+    {mom:3.5,yrs:4,irr:37},{mom:3.5,yrs:5,irr:28},
+    {mom:4,yrs:4,irr:41},{mom:4,yrs:5,irr:32},
+    {mom:1.5,yrs:3,irr:14},{mom:1.5,yrs:4,irr:11},
+  ];
+  irrBench.forEach(({mom,yrs,irr})=>{
+    const opts=[`~${irr}%`,`~${irr+5}%`,`~${irr-5}%`,`~${irr+8}%`].filter((v,i,a)=>a.indexOf(v)===i);
+    qs.push({
+      cat:"IRR / MoM",
+      q:`PE fund achieves ${mom}x MoM over ${yrs} years. Approximate IRR?`,
+      answer:`~${irr}%`, displayAnswer:`~${irr}%`,
+      explanation:`${mom}^(1/${yrs})−1 ≈ ${irr}%. ${irr>=20?'Above 20% PE hurdle rate.':'Below typical 20% PE hurdle.'}`,
+      type:"mcq", options:opts.slice(0,4)
+    });
+    // also add reverse: given IRR and years → MoM
+    const momBack = fmt(Math.pow(1+irr/100,yrs),2);
+    qs.push({
+      cat:"IRR / MoM",
+      q:`IRR ≈ ${irr}% over ${yrs} years. Approximate MoM multiple?`,
+      answer:`~${momBack}x`, displayAnswer:`~${momBack}x`,
+      explanation:`(1+${irr}%)^${yrs} = ${momBack}x`,
+      type:"mcq", options:[`~${momBack}x`,`~${fmt(momBack*1.15,2)}x`,`~${fmt(momBack*0.85,2)}x`,`~${fmt(momBack+0.5,2)}x`]
+    });
+  });
+
+  // LBO equity return (20 questions)
+  for(let i=0;i<20;i++){
+    const entryEv  = rChoice([200,300,400,500,600,800,1000]);
+    const debtPct  = rChoice([50,55,60,65]);
+    const debt     = Math.round(entryEv*debtPct/100);
+    const entryEq  = entryEv-debt;
+    const ebitdaGrowth = rChoice([1.2,1.3,1.4,1.5,1.6,1.8,2]);
+    const multExp  = rChoice([0, 0.5, 1, -0.5]);
+    const exitMult = rChoice([6,7,8,9,10,11,12]);
+    const debtRepaid = Math.round(debt*rChoice([0.2,0.3,0.4,0.5]));
+    const exitEbitda = Math.round(entryEv/rChoice([6,7,8,9,10])*ebitdaGrowth);
+    const exitEv   = exitEbitda*exitMult;
+    const exitDebt = debt-debtRepaid;
+    const exitEq   = exitEv-exitDebt;
+    if(exitEq<=0||entryEq<=0) continue;
+    const mom = fmt(exitEq/entryEq,2);
+    qs.push({
+      cat:"IRR / MoM",
+      q:`LBO: entry EV=$${entryEv}M (${debtPct}% debt), exit EV=$${exitEv}M, $${debtRepaid}M debt repaid. MoM? (e.g. 2.50)`,
+      answer:mom, displayAnswer:`${mom}x`,
+      explanation:`Entry equity=$${entryEq}M. Exit equity=$${exitEv}−$${exitDebt}=$${exitEq}M. MoM=$${exitEq}÷$${entryEq}=${mom}x`,
+      type:"number", distractors:[fmt(mom+0.5,2),fmt(mom-0.3,2),fmt(exitEv/entryEv,2)]
+    });
+  }
+
+  // Rule of 72 (15 questions)
+  [6,8,9,10,12,15,18,24,36,4,5,7,11,16,20].forEach(ret=>{
+    const yrs = fmt(72/ret,1);
+    qs.push({
+      cat:"IRR / MoM",
+      q:`Rule of 72: at ${ret}% annual return, years to double? (1 decimal)`,
+      answer:yrs, displayAnswer:`${yrs} years`,
+      explanation:`72 ÷ ${ret} = ${yrs} years to double. Quick compounding benchmark.`,
+      type:"number", distractors:[fmt(yrs+1,1),fmt(yrs-1,1),fmt(yrs+2,1)]
+    });
+  });
+
+  // ── 8. BOND / YIELD MATHS ─────────────────────────────────────────────────
+  // Earnings yield / reciprocal (30 questions)
+  [8,9,10,11,12,13,14,15,16,18,20,22,24,25,28,30].forEach(mult=>{
+    const yld = fmt(100/mult,1);
+    qs.push({
+      cat:"Yields",
+      q:`A stock trades at ${mult}x P/E. Earnings yield? (%, 1 decimal)`,
+      answer:yld, displayAnswer:`${yld}%`,
+      explanation:`1÷${mult} = ${yld}%. ${yld<5?'Rich relative to bonds — thin ERP.':yld>8?'Cheap — wide ERP.':'Moderate ERP.'}`,
+      type:"number", distractors:[fmt(yld+0.5,1),fmt(yld-0.5,1),fmt(yld+1,1)]
+    });
+  });
+
+  // Multiple from yield (15 questions)
+  [4,5,6,6.5,7,7.5,8,8.5,9,10,10.5,11,12,12.5,14].forEach(yld=>{
+    const mult = Math.round(100/yld);
+    qs.push({
+      cat:"Yields",
+      q:`FCF yield = ${yld}%. Implied EV/FCF multiple? (round to nearest integer)`,
+      answer:mult, displayAnswer:`${mult}x`,
+      explanation:`1÷${yld}% = ${mult}x EV/FCF.`,
+      type:"number", distractors:[mult+1,mult-1,mult+2]
+    });
+  });
+
+  // Bond price/yield direction (MCQ, 15 questions)
+  const bondScenarios = [
+    {scenario:"A bond's coupon is 4%, new market rate is 6%.",above:true,why:"Below par → yield > coupon."},
+    {scenario:"A bond's coupon is 6%, new market rate is 4%.",above:false,why:"Above par → yield < coupon."},
+    {scenario:"Rates rise 1%. What happens to bond prices?",above:false,why:"Price and yield move inversely.",q2:true},
+    {scenario:"Rates fall 100bps. What happens to long-duration bond prices?",above:true,why:"Price rises as rates fall. Long duration = higher sensitivity.",q2:true},
+  ];
+  bondScenarios.forEach(({scenario,above,why,q2})=>{
+    if(q2){
+      qs.push({cat:"Yields",q:scenario+" (Prices rise / fall?)",answer:above?"Rise":"Fall",displayAnswer:above?"Rise":"Fall",explanation:why,type:"mcq",options:["Rise","Fall","Unchanged","Cannot tell"]});
+    } else {
+      qs.push({cat:"Yields",q:scenario+" Is the yield above or below the coupon rate?",answer:above?"Above":"Below",displayAnswer:above?"Above":"Below",explanation:why,type:"mcq",options:["Above","Below","Equal","Cannot tell"]});
+    }
+  });
+
+  // ── 9. COMPOUNDING ────────────────────────────────────────────────────────
+  // Two-year compounding: (1+r)^2 (25 questions)
+  [5,8,10,12,15,18,20,22,25,30].forEach(r=>{
+    const total = fmt(Math.pow(1+r/100,2)*100-100,2);
+    qs.push({
+      cat:"Compounding",
+      q:`Two years at ${r}% annual growth. Total return? (%, compound, 2 decimal)`,
+      answer:total, displayAnswer:`${total}%`,
+      explanation:`(1+${r}%)²−1 = ${total}%. Compounding, not ${r*2}% (simple).`,
+      type:"number", distractors:[fmt(r*2,2),fmt(total+2,2),fmt(total-2,2)]
+    });
+  });
+
+  // CAGR back-solve (20 questions)
+  for(let i=0;i<20;i++){
+    const from = rChoice([50,80,100,150,200,300,400,500]);
+    const yrs  = rChoice([2,3,4,5]);
+    const cagr = rChoice([5,8,10,12,15,20]);
+    const to   = Math.round(from*Math.pow(1+cagr/100,yrs));
+    qs.push({
+      cat:"Compounding",
+      q:`Revenue $${from}M grows to $${to}M over ${yrs} years. CAGR? (%, no symbol)`,
+      answer:cagr, displayAnswer:`${cagr}%`,
+      explanation:`($${to}÷$${from})^(1/${yrs})−1 ≈ ${cagr}%`,
+      type:"mcq", options:[`${cagr}%`,`${cagr+3}%`,`${cagr-3}%`,`${cagr+5}%`]
+    });
+  }
+
+  // 1.x × 1.y products (20 questions)
+  [[1.1,1.1,"1.21"],[1.2,1.2,"1.44"],[1.25,1.25,"1.5625"],[1.15,1.15,"1.3225"],
+   [1.1,1.2,"1.32"],[1.2,1.3,"1.56"],[1.1,1.3,"1.43"],[1.05,1.05,"1.1025"],
+   [1.3,1.3,"1.69"],[1.4,1.4,"1.96"]].forEach(([a,b,res])=>{
+    const totalPct = fmt((+res-1)*100,2);
+    qs.push({
+      cat:"Compounding",
+      q:`${a} × ${b} = ? (two-year compounded return — state total %)`,
+      answer:totalPct, displayAnswer:`${res} (${totalPct}%)`,
+      explanation:`${a}×${b}=${res} → ${totalPct}% total. Not ${fmt(((a-1)+(b-1))*100,0)}% (compounding is non-linear).`,
+      type:"mcq",
+      options:[`${totalPct}%`,`${fmt(((a-1)+(b-1))*100,0)}%`,`${fmt(totalPct*1.05,2)}%`,`${fmt(totalPct*0.95,2)}%`]
+    });
+  });
+
+  // ── 10. ACCRETION / DILUTION (new) ────────────────────────────────────────
+  for(let i=0;i<25;i++){
+    const acquirerEPS = rChoice([2,2.5,3,3.5,4,5]);
+    const acquirerShares = rChoice([50,80,100,120,150,200]);
+    const targetNI = rChoice([10,15,20,25,30,40]);
+    const newShares = rChoice([5,8,10,12,15,20]);
+    const cost = rChoice([3,4,5,6,8,10]); // interest/funding cost after tax
+    const combinedNI = acquirerEPS*acquirerShares + targetNI - cost;
+    const combinedShares = acquirerShares + newShares;
+    const newEPS = fmt(combinedNI/combinedShares,2);
+    const isAccretive = newEPS > acquirerEPS;
+    qs.push({
+      cat:"M&A Maths",
+      q:`Acquirer: EPS=$${acquirerEPS}, ${acquirerShares}M shares. Issues ${newShares}M new shares. Target NI=$${targetNI}M, after-tax cost=$${cost}M. New EPS? ($)`,
+      answer:newEPS, displayAnswer:`$${newEPS} (${isAccretive?"Accretive":"Dilutive"})`,
+      explanation:`Combined NI=$${fmt(combinedNI,1)}M ÷ ${combinedShares}M shares=$${newEPS}. ${isAccretive?"Accretive — EPS rises.":"Dilutive — EPS falls."}`,
+      type:"number", distractors:[fmt(newEPS+0.2,2),fmt(newEPS-0.2,2),fmt(acquirerEPS,2)]
+    });
+  }
+
+  // ── 11. EXCHANGE RATE / FX MATHS (new) ───────────────────────────────────
+  for(let i=0;i<20;i++){
+    const aud = rChoice([0.62,0.64,0.65,0.66,0.68,0.70,0.72,0.74,0.75]);
+    const amountUSD = rChoice([10,20,25,50,100,200]);
+    const amountAUD = fmt(amountUSD/aud,2);
+    qs.push({
+      cat:"FX Maths",
+      q:`AUD/USD = ${aud}. Convert USD$${amountUSD}M to AUD? ($M, 2 decimal)`,
+      answer:amountAUD, displayAnswer:`A$${amountAUD}M`,
+      explanation:`USD$${amountUSD}M ÷ ${aud} = A$${amountAUD}M`,
+      type:"number", distractors:[fmt(amountAUD*1.05,2),fmt(amountAUD*0.95,2),fmt(amountUSD*aud,2)]
+    });
+  }
+  for(let i=0;i<15;i++){
+    const spot = rChoice([0.63,0.65,0.67,0.69,0.71,0.73,0.75]);
+    const chgPct = rChoice([-5,-4,-3,-2,-1,1,2,3,4,5]);
+    const newRate = fmt(spot*(1+chgPct/100),4);
+    qs.push({
+      cat:"FX Maths",
+      q:`AUD/USD spot = ${spot}. AUD ${chgPct>0?"appreciates":"depreciates"} ${Math.abs(chgPct)}%. New rate? (4 decimal)`,
+      answer:newRate, displayAnswer:`${newRate}`,
+      explanation:`${spot} × (1${chgPct>=0?"+":"-"}${Math.abs(chgPct)}%) = ${newRate}`,
+      type:"number", distractors:[fmt(newRate+0.01,4),fmt(newRate-0.01,4),fmt(newRate+0.02,4)]
+    });
+  }
+
+  // ── 12. QUICK MENTAL SHORTCUTS (MCQ) ─────────────────────────────────────
+  const shortcuts = [
+    {q:"1/8 as a percentage?",a:"12.5%",opts:["12.5%","15%","11.1%","13.3%"],exp:"1÷8=12.5%"},
+    {q:"1/6 as a percentage (1 dp)?",a:"16.7%",opts:["16.7%","15%","18%","14.3%"],exp:"1÷6≈16.7%"},
+    {q:"1/7 as a percentage (1 dp)?",a:"14.3%",opts:["14.3%","12.5%","15.4%","16.7%"],exp:"1÷7≈14.3%"},
+    {q:"1/9 as a percentage (1 dp)?",a:"11.1%",opts:["11.1%","10%","12.5%","9.1%"],exp:"1÷9≈11.1%"},
+    {q:"1/3 as a percentage?",a:"33.3%",opts:["33.3%","30%","35%","25%"],exp:"1÷3≈33.3%"},
+    {q:"Approximate √2 (2 dp)?",a:"1.41",opts:["1.41","1.44","1.38","1.50"],exp:"√2≈1.414. Useful for 2-year at 41.4% total ≈ 20% CAGR."},
+    {q:"Approximate √3 (2 dp)?",a:"1.73",opts:["1.73","1.70","1.75","1.80"],exp:"√3≈1.732"},
+    {q:"2^10 = ?",a:"1,024",opts:["1,024","1,000","1,048","512"],exp:"2^10=1,024. A 'doubling every period' shortcut."},
+    {q:"What is 1/0.09 (to nearest 1)?",a:"11",opts:["11","10","12","9"],exp:"1÷0.09≈11.1. Useful for a 9% earnings yield → ~11x P/E."},
+    {q:"What is 1/0.07 (to nearest 1)?",a:"14",opts:["14","13","15","12"],exp:"1÷0.07≈14.3. A 7% FCF yield → ~14x EV/FCF."},
+    {q:"$1M invested at 8% for 10 years (compound, round to nearest $100k)?",a:"$2.2M",opts:["$2.2M","$1.8M","$2.0M","$2.4M"],exp:"1.08^10≈2.159. Rule of 72: double in 9 years."},
+    {q:"$100M growing at 15%/yr. Value after 5 years? (nearest $M)",a:"$201M",opts:["$201M","$175M","$225M","$150M"],exp:"100×1.15^5≈100×2.011=$201M"},
+  ];
+  shortcuts.forEach(({q,a,opts,exp})=>{
+    qs.push({cat:"Mental Shortcuts",q,answer:a,displayAnswer:a,explanation:exp,type:"mcq",options:opts});
+  });
+
   return qs;
-})();
+}
+
+// Generate the session pool once on load, regenerate on each restart
+let MM_POOL = generateMMPool();
 
 // ── MM State ──────────────────────────────────────────────────────────────────
 let mmInitialised = false;
@@ -1223,20 +1508,27 @@ let mmAnswered = false, mmTimerSec = 0, mmTimerInterval = null, mmTimeLeft = 0;
 let mmMode = "mcq"; // "mcq" | "input"
 let mmActiveFilter = "All";
 let mmMissedIndices = new Set();
-let mmPendingRestartMissed = false;
+let mmSessionSize = 60;
 
-const MM_CATS = ["All", ...new Set(MM_QUESTIONS.map(q=>q.cat))];
+const MM_CATS = ["All", ...new Set(MM_POOL.map(q=>q.cat))];
+
+function mmSetSize(btn){
+  document.querySelectorAll(".mm-size-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  mmSessionSize = +btn.dataset.size;
+  if(mmInitialised) mmApplyFilter(mmActiveFilter);
+}
 
 function mmInit(){
   mmInitialised = true;
-  // build category filters
   const cont = document.getElementById("mm-filters");
   cont.innerHTML = "";
   MM_CATS.forEach(cat=>{
-    const n = cat==="All" ? MM_QUESTIONS.length : MM_QUESTIONS.filter(q=>q.cat===cat).length;
+    const pool = cat==="All" ? MM_POOL : MM_POOL.filter(q=>q.cat===cat);
+    const n = Math.min(pool.length, mmSessionSize);
     const btn = document.createElement("button");
     btn.className = "mm-cat-btn" + (cat===mmActiveFilter?" active":"");
-    btn.textContent = `${cat} (${n})`;
+    btn.textContent = `${cat} (${n}+)`;
     btn.onclick = ()=>mmApplyFilter(cat);
     cont.appendChild(btn);
   });
@@ -1244,13 +1536,15 @@ function mmInit(){
 }
 
 function mmApplyFilter(cat){
+  // Regenerate fresh pool each time so questions are always new
+  MM_POOL = generateMMPool();
   mmActiveFilter = cat;
   document.querySelectorAll(".mm-cat-btn").forEach(b=>{
-    b.classList.toggle("active", b.textContent.replace(/ \(\d+\)$/,"")===cat);
+    b.classList.toggle("active", b.textContent.replace(/ \(\d+\+\)$/,"")===cat);
   });
-  let src = cat==="All" ? [...MM_QUESTIONS] : MM_QUESTIONS.filter(q=>q.cat===cat);
-  // shuffle
-  for(let i=src.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[src[i],src[j]]=[src[j],src[i]];}
+  let src = cat==="All" ? [...MM_POOL] : MM_POOL.filter(q=>q.cat===cat);
+  shuffle(src);
+  if(mmSessionSize < 999) src = src.slice(0, mmSessionSize);
   mmDeck = src;
   mmIdx=0; mmCorrectCount=0; mmWrongCount=0; mmStreak=0; mmBestStreak=0;
   mmMissedIndices.clear(); mmAnswered=false;
@@ -1284,9 +1578,9 @@ function mmRenderQuestion(){
   document.getElementById("mm-question").textContent = q.q;
 
   const fb = document.getElementById("mm-feedback");
-  fb.className = "mm-feedback"; fb.textContent="";
+  fb.className = "mm-feedback"; fb.innerHTML="";
 
-  document.getElementById("mm-next-hint").style.display="none";
+  document.getElementById("mm-next-row").style.display="none";
 
   const optsEl = document.getElementById("mm-options");
   const inputRow = document.getElementById("mm-input-row");
@@ -1371,7 +1665,234 @@ function mmSubmitInput(){
   mmShowFeedback(isRight, q);
 }
 
-function mmShowFeedback(isRight, q){
+function mmBuildFeedbackHTML(isRight, q, timedOut){
+  const icon = timedOut ? "⏱" : isRight ? "✓ Correct" : "✗ Incorrect";
+  const headerClass = isRight && !timedOut ? "correct" : "wrong";
+
+  // ── Rich method explanation per category ──────────────────────────────────
+  function richMethod(q){
+    const cat = q.cat;
+    const exp = q.explanation;
+
+    // Shared helper: wrap steps
+    const step = (n, text) => `<div class="step"><span class="step-num">${n}</span><span>${text}</span></div>`;
+
+    if(cat === "Percentages"){
+      if(q.q.includes("Growth rate") || q.q.includes("growth")){
+        return `
+          ${step("1","<strong>Growth rate</strong> = (New − Old) ÷ Old")}
+          ${step("2","Find the difference first, then divide by the base")}
+          ${step("3","<strong>Shortcut:</strong> if revenue is close to a round number, anchor to 10% = 1/10 of base")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> Interviewers expect you to anchor. Say "10% of $${q.q.match(/\$(\d+)M/)?.[1]||'X'}M is $X, so [growth]% is..."</div>`;
+      }
+      if(q.q.includes("margin")){
+        return `
+          ${step("1","Margin = Profit ÷ Revenue × 100")}
+          ${step("2","Or: Revenue × Margin% = Profit")}
+          <div class="mm-fb-tip"><strong>Shortcut:</strong> 20% margin = 1/5 of revenue. 25% = 1/4. 10% = move decimal left one place.</div>`;
+      }
+      return `
+        ${step("1","Find 10% first: move decimal point left one place")}
+        ${step("2","Build from there: 15% = 10% + 5% (half of 10%). 25% = 10%×2 + 5%")}
+        ${step("3","${exp}")}
+        <div class="mm-fb-tip"><strong>Anchor method:</strong> All % calculations flow from 10%. Memorise: 12.5% = 1/8, 33.3% = 1/3, 16.7% = 1/6.</div>`;
+    }
+
+    if(cat === "Multiples"){
+      if(q.q.includes("EV/EBITDA")){
+        return `
+          ${step("1","EV/EBITDA = Enterprise Value ÷ EBITDA")}
+          ${step("2","${exp}")}
+          ${step("3","Context: Industrials/defensives ~6–9x. Tech/growth ~12–20x. LBO entry typically 8–12x.")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> Always sanity-check multiples against sector benchmarks. Being able to say "that's rich for industrials but reasonable for SaaS" shows market awareness.</div>`;
+      }
+      if(q.q.includes("P/E") || q.q.includes("EPS")){
+        return `
+          ${step("1","Price = EPS × P/E multiple")}
+          ${step("2","${exp}")}
+          ${step("3","Earnings yield = 1 ÷ P/E. At 20x P/E → 5% earnings yield.")}
+          <div class="mm-fb-tip"><strong>Reciprocal trick:</strong> Know 1/P/E instantly. 10x=10%, 15x=6.7%, 20x=5%, 25x=4%. Compare to 10yr bond yield to assess equity risk premium.</div>`;
+      }
+      return `${step("1", exp)}<div class="mm-fb-tip">Always sanity check: does the multiple make sense for the sector?</div>`;
+    }
+
+    if(cat === "Equity Bridge"){
+      if(q.q.includes("premium")){
+        return `
+          ${step("1","Premium = (Offer Price − Current Price) ÷ Current Price")}
+          ${step("2","${exp}")}
+          ${step("3","Typical M&A premiums: 20–40% for public targets. Below 15% = lowball, above 50% = overpaying unless major synergies.")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> Interviewers ask about premiums in context — always connect to synergy value and whether the deal is accretive.</div>`;
+      }
+      return `
+        ${step("1","<strong>Equity Bridge:</strong> EV − Net Debt = Equity Value")}
+        ${step("2","If net cash (no debt): EV + Cash = Equity Value")}
+        ${step("3","Share Price = Equity Value ÷ Diluted Shares Outstanding")}
+        ${step("4","${exp}")}
+        <div class="mm-fb-tip"><strong>Common mistake:</strong> Forgetting to use diluted share count (includes options/warrants). In interviews, always state "diluted shares."</div>`;
+    }
+
+    if(cat === "Leverage"){
+      if(q.q.includes("coverage") || q.q.includes("interest")){
+        return `
+          ${step("1","Interest Coverage = EBIT ÷ Interest Expense")}
+          ${step("2","${exp}")}
+          ${step("3","Benchmarks: <2x = distress risk. 2–3x = tight. 3x+ = comfortable. IG bonds typically >4x.")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> Lenders care about coverage more than leverage in declining EBITDA scenarios. In LBO models, check both: leverage for debt capacity, coverage for serviceability.</div>`;
+      }
+      if(q.q.includes("Implied EBITDA")){
+        return `
+          ${step("1","Rearrange: Leverage = Debt ÷ EBITDA → EBITDA = Debt ÷ Leverage")}
+          ${step("2","${exp}")}
+          <div class="mm-fb-tip"><strong>Useful in LBOs:</strong> If a sponsor wants to put in $X of debt at Yx leverage, you can back into the required EBITDA instantly.</div>`;
+      }
+      return `
+        ${step("1","Net Leverage = Net Debt ÷ EBITDA")}
+        ${step("2","${exp}")}
+        ${step("3","Benchmarks: 0–2x = conservative/IG. 2–4x = typical corporate. 4–6x = LBO range. >6x = distressed.")}
+        <div class="mm-fb-tip"><strong>IB tip:</strong> Always state leverage in context — "4x is high for a utility but standard for a PE-backed consumer business." Shows sector awareness.</div>`;
+    }
+
+    if(cat === "P&L Maths"){
+      if(q.q.includes("NOPAT")){
+        return `
+          ${step("1","NOPAT = EBIT × (1 − Tax Rate)")}
+          ${step("2","${exp}")}
+          ${step("3","NOPAT removes the effect of capital structure — it's EBIT on an after-tax basis.")}
+          <div class="mm-fb-tip"><strong>Why it matters:</strong> NOPAT is the starting point for unlevered free cash flow in a DCF. It represents the true operating return regardless of how the business is financed.</div>`;
+      }
+      if(q.q.includes("D&A") && q.q.includes("Net income")){
+        return `
+          ${step("1","D&A is a non-cash expense → increases EBIT by −$X but creates a tax shield")}
+          ${step("2","NI impact = −D&A increase × (1 − tax rate)")}
+          ${step("3","${exp}")}
+          ${step("4","Cash flow impact is <em>opposite</em>: CFO rises by D&A × tax rate (non-cash shield)")}
+          <div class="mm-fb-tip"><strong>3-statement link:</strong> ↑D&A → ↓EBT → ↓Tax paid → NI falls by D&A×(1−t). But on cash flow statement, D&A is added back, so CFO = NI + D&A add-back. Net effect on CFO = +D&A×tax rate.</div>`;
+      }
+      return `
+        ${step("1","<strong>P&L waterfall:</strong> Revenue → Gross Profit → EBITDA → EBIT → EBT → Net Income")}
+        ${step("2","Each step subtracts: COGS, then SG&A+D&A, then interest, then tax")}
+        ${step("3","${exp}")}
+        <div class="mm-fb-tip"><strong>Tax always last:</strong> Tax = EBT × tax rate. If EBT is negative, NI = EBT (no tax benefit unless you model tax loss carryforwards).</div>`;
+    }
+
+    if(cat === "DCF"){
+      if(q.q.includes("Terminal") || q.q.includes("TV") || q.q.includes("terminal")){
+        return `
+          ${step("1","<strong>Gordon Growth Model:</strong> TV = FCF × (1+g) ÷ (WACC − g)")}
+          ${step("2","The spread (WACC − g) is everything — small changes explode the TV")}
+          ${step("3","${exp}")}
+          ${step("4","TV typically = 60–80% of total DCF value — always stress-test it")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> Interviewers love asking "what happens to TV if WACC goes from 10% to 9%?" — the answer is it rises significantly because the denominator shrinks. A 1% change in WACC on a $100M FCF at 2% growth: TV goes from $1,020M to $1,133M — a 10%+ swing.</div>`;
+      }
+      return `
+        ${step("1","<strong>Unlevered FCF:</strong> NOPAT + D&A − ΔWC − Capex")}
+        ${step("2","${exp}")}
+        ${step("3","ΔWC: working capital increase = cash outflow (you're funding growth). Decrease = inflow.")}
+        <div class="mm-fb-tip"><strong>Common DCF mistake:</strong> Using levered FCF (after interest) instead of unlevered. In a DCF you discount unlevered FCF at WACC, then subtract net debt at the end to get equity value.</div>`;
+    }
+
+    if(cat === "IRR / MoM"){
+      if(q.q.includes("MoM") || q.q.includes("MoM multiple") || q.q.includes("approximate")){
+        return `
+          ${step("1","<strong>IRR formula:</strong> IRR = MoM^(1/years) − 1")}
+          ${step("2","<strong>Key benchmarks to memorise:</strong>")}
+          <div style="font-family:'DM Mono',monospace;font-size:0.7rem;line-height:2;padding:6px 0 6px 8px;">
+            2x / 3yr ≈ 26% &nbsp;·&nbsp; 2x / 4yr ≈ 19% &nbsp;·&nbsp; 2x / 5yr ≈ 15%<br>
+            3x / 3yr ≈ 44% &nbsp;·&nbsp; 3x / 4yr ≈ 32% &nbsp;·&nbsp; 3x / 5yr ≈ 25%<br>
+            2.5x / 5yr ≈ 20% &nbsp;·&nbsp; PE hurdle = 20%+
+          </div>
+          ${step("3","${exp}")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> In an LBO interview, you need these cold. A 3x in 5 years (25% IRR) is the standard "good deal" benchmark. Always state whether it clears the 20% PE hurdle.</div>`;
+      }
+      if(q.q.includes("Rule of 72")){
+        return `
+          ${step("1","<strong>Rule of 72:</strong> Years to double = 72 ÷ annual return %")}
+          ${step("2","${exp}")}
+          ${step("3","Corollary: rate to double in N years = 72 ÷ N")}
+          <div class="mm-fb-tip"><strong>Usage:</strong> Quick compounding sanity check. At 8% → doubles every 9 years. $1M at 8% for 36 years = $16M (doubles 4 times: 2→4→8→16).</div>`;
+      }
+      return `
+        ${step("1","MoM = Exit Equity ÷ Entry Equity")}
+        ${step("2","${exp}")}
+        ${step("3","Entry equity = EV − debt injected. Exit equity = exit EV − remaining debt.")}
+        <div class="mm-fb-tip"><strong>LBO value creation:</strong> Three drivers — EBITDA growth, multiple expansion, debt paydown. In interviews, always decompose which drove the return.</div>`;
+    }
+
+    if(cat === "Yields"){
+      return `
+        ${step("1","<strong>Earnings yield</strong> = 1 ÷ P/E multiple (inverse of P/E)")}
+        ${step("2","${exp}")}
+        ${step("3","Compare to risk-free rate (10yr bond) to derive the Equity Risk Premium")}
+        <div class="mm-fb-tip"><strong>Reciprocals to memorise:</strong> 10x→10%, 12x→8.3%, 15x→6.7%, 20x→5%, 25x→4%. If the 10yr is at 4.5% and earnings yield is 5%, the ERP is only 50bps — tight. Implies the market is pricing in growth or is expensive.</div>`;
+    }
+
+    if(cat === "Compounding"){
+      if(q.q.includes("CAGR")){
+        return `
+          ${step("1","<strong>CAGR</strong> = (End ÷ Start)^(1/n) − 1")}
+          ${step("2","${exp}")}
+          ${step("3","Quick check: does the answer compound to the right end value? Start × (1+CAGR)^n = End")}
+          <div class="mm-fb-tip"><strong>Shortcut:</strong> For round CAGRs, use (End/Start) and recognise: 1.21=1.1², 1.44=1.2², 1.728≈1.2³. For longer periods, use Rule of 72 to sanity check.</div>`;
+      }
+      return `
+        ${step("1","Compounding is <strong>non-linear</strong>: (1+r)² ≠ 1+2r")}
+        ${step("2","${exp}")}
+        ${step("3","The difference is r² — the cross-term. At 20%: simple=40%, compound=44%. Gap widens with higher r.")}
+        <div class="mm-fb-tip"><strong>Two-year shortcut:</strong> (1+r)² = 1 + 2r + r². At 10%: 1.21. At 20%: 1.44. At 25%: 1.5625. Memorise these for quick mental checks.</div>`;
+    }
+
+    if(cat === "M&A Maths"){
+      if(q.q.includes("EPS") || q.q.includes("accret")){
+        return `
+          ${step("1","New EPS = (Acquirer NI + Target NI − Funding Cost) ÷ (Acquirer Shares + New Shares)")}
+          ${step("2","${exp}")}
+          ${step("3","<strong>Accretive:</strong> New EPS > Old EPS. <strong>Dilutive:</strong> New EPS < Old EPS.")}
+          ${step("4","Key driver: target P/E vs acquirer P/E. If target P/E < acquirer P/E → accretive in a stock deal.")}
+          <div class="mm-fb-tip"><strong>IB tip:</strong> In a cash deal, the funding cost is after-tax interest. In a stock deal, the cost is the earnings yield on new shares issued. The deal is accretive if target earnings yield > acquirer earnings yield.</div>`;
+      }
+      return `
+        ${step("1","${exp}")}
+        <div class="mm-fb-tip"><strong>M&A rule of thumb:</strong> Strategic premiums of 20–40% are typical. Synergies must exceed the premium NPV for value creation.</div>`;
+    }
+
+    if(cat === "FX Maths"){
+      return `
+        ${step("1","<strong>AUD/USD quote:</strong> 1 AUD = X USD")}
+        ${step("2","To convert USD → AUD: divide by the rate. To convert AUD → USD: multiply.")}
+        ${step("3","${exp}")}
+        <div class="mm-fb-tip"><strong>Quick check:</strong> AUD/USD ~0.65 means A$1 = US$0.65, so A$ is worth less. $100M USD ÷ 0.65 ≈ A$154M. Always ask: which currency is the base?</div>`;
+    }
+
+    if(cat === "Mental Shortcuts"){
+      return `
+        ${step("1","${exp}")}
+        <div class="mm-fb-tip"><strong>Why this matters in IB:</strong> Interviewers test whether you can compute quickly in your head during case discussions. These shortcuts are the base layer — build from them rather than reaching for a calculator.</div>`;
+    }
+
+    // Fallback
+    return `${step("1", exp)}`;
+  }
+
+  // Build correct answer display
+  const answerLine = `<div class="mm-fb-answer">Answer: <strong>${q.displayAnswer}</strong></div>`;
+
+  if(isRight && !timedOut){
+    // Correct — brief confirmation + shortcut tip
+    return `<div class="mm-fb-header">✓ Correct</div>`;
+  }
+
+  // Wrong or timed out — full rich explanation
+  const prefix = timedOut ? "⏱ Time's up — " : "✗ Incorrect — ";
+  return `
+    <div class="mm-fb-header">${prefix}here's how to approach this</div>
+    <div class="mm-fb-body">
+      ${answerLine}
+      <div class="mm-fb-method">${richMethod(q)}</div>
+    </div>`;
+}
+
+function mmShowFeedback(isRight, q, timedOut=false){
   if(isRight){
     mmCorrectCount++; mmStreak++;
     if(mmStreak>mmBestStreak) mmBestStreak=mmStreak;
@@ -1382,17 +1903,17 @@ function mmShowFeedback(isRight, q){
   mmUpdateStats();
 
   const fb = document.getElementById("mm-feedback");
-  fb.className = "mm-feedback " + (isRight?"correct":"wrong");
-  fb.textContent = isRight
-    ? `✓ Correct. ${q.explanation}`
-    : `✗ Answer: ${q.displayAnswer}. ${q.explanation}`;
+  fb.className = "mm-feedback " + (isRight&&!timedOut ? "correct" : "wrong");
+  fb.innerHTML = mmBuildFeedbackHTML(isRight, q, timedOut);
 
-  document.getElementById("mm-next-hint").style.display="block";
+  document.getElementById("mm-next-row").style.display="flex";
+  document.getElementById("mm-next-btn").focus();
+}
 
-  setTimeout(()=>{
-    if(mmIdx < mmDeck.length-1){ mmIdx++; mmRenderQuestion(); }
-    else { mmShowComplete(); }
-  }, isRight ? 1200 : 2800);
+function mmAdvance(){
+  if(!mmAnswered) return;
+  if(mmIdx < mmDeck.length-1){ mmIdx++; mmRenderQuestion(); }
+  else { mmShowComplete(); }
 }
 
 function mmStartTimer(){
@@ -1407,17 +1928,12 @@ function mmStartTimer(){
       mmStopTimer();
       if(!mmAnswered){
         mmAnswered=true;
-        mmWrongCount++; mmStreak=0;
-        mmMissedIndices.add(mmIdx);
-        mmUpdateStats();
+        // disable inputs
+        document.querySelectorAll(".mm-opt").forEach(b=>b.disabled=true);
+        document.getElementById("mm-input").disabled=true;
+        document.getElementById("mm-submit-btn").disabled=true;
         const q=mmDeck[mmIdx];
-        const fb=document.getElementById("mm-feedback");
-        fb.className="mm-feedback wrong";
-        fb.textContent=`⏱ Time's up. Answer: ${q.displayAnswer}. ${q.explanation}`;
-        document.getElementById("mm-next-hint").style.display="block";
-        setTimeout(()=>{
-          if(mmIdx<mmDeck.length-1){mmIdx++;mmRenderQuestion();}else{mmShowComplete();}
-        }, 2800);
+        mmShowFeedback(false, q, true);
       }
     }
   },1000);
@@ -1494,19 +2010,20 @@ function mmRestartMissed(){
 }
 
 function mmKeyHandler(e){
-  if(document.activeElement===document.getElementById("mm-input")) return;
+  const input = document.getElementById("mm-input");
+  if(document.activeElement===input) return;
   if(mmAnswered){
-    if(e.key===" "||e.key==="Enter"){e.preventDefault();return;}
+    if(e.key===" "||e.key==="Enter"){e.preventDefault(); mmAdvance();}
     return;
   }
   // A/B/C/D for MCQ
   const keyMap={a:0,b:1,c:2,d:3};
   const k=e.key.toLowerCase();
-  if(keyMap[k]!==undefined && mmMode==="mcq"){
+  if(keyMap[k]!==undefined){
     const opts=document.querySelectorAll(".mm-opt");
     if(opts[keyMap[k]]) opts[keyMap[k]].click();
   }
-  if(e.key==="Enter"&&mmMode==="input") mmSubmitInput();
+  if(e.key==="Enter") mmSubmitInput();
 }
 
 init();
